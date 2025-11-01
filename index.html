@@ -1,0 +1,313 @@
+<!-- /index.html -->
+<!doctype html>
+<html lang="it">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>LUMINOVA Intro</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
+
+  <link rel="preload" as="image" href="img/img1.jpg">
+  <link rel="preload" as="image" href="img/img2.jpg">
+  <link rel="preload" as="image" href="img/img3.jpg">
+  <link rel="preload" as="image" href="img/img4.jpg">
+  <link rel="preload" as="image" href="img/img5.jpg">
+
+  <style>
+    html, body { width: 100%; max-width: 100%; overflow-x: clip; }
+    @supports not (overflow: clip) { html, body { overflow-x: hidden; } }
+
+    body {
+      background: radial-gradient(circle at 50% 10%, #f8f9fb 0%, #eceff2 100%);
+      overflow: hidden;
+    }
+
+    main { perspective: 1200px; overflow-x: clip; }
+    .slide { position: absolute; inset: 0; opacity: 0; will-change: opacity; }
+    .slide img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; transform: translateZ(0); }
+
+    #showcase {
+      contain: layout paint;
+      backface-visibility: hidden;
+      opacity: 0;
+      transform: translateZ(0);
+      will-change: transform, opacity, filter;
+      overflow: hidden;
+    }
+
+    #brand { z-index: 10; }
+
+    .smoke {
+      color: rgba(31, 41, 55, .92);
+      text-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+      letter-spacing: .02em;
+    }
+
+    #wevin { color: rgba(55, 65, 81, .9); font-weight: 700; text-shadow: 0 4px 15px rgba(0,0,0,.25); }
+
+    /* MENU: nascosto senza occupare/renderizzare (non copre lo sfondo prima del reveal) */
+    #menuLinks { visibility: hidden; pointer-events: none; }
+
+    /* MENU: sfondo vetroso già pronto (non animato) */
+    #menuLinks ul {
+      background-color: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.15);
+      transform: translateY(0); /* stabile */
+    }
+
+    /* Animeremo solo i link, così lo sfondo appare già opacizzato */
+    #menuLinks ul li { opacity: 0; transform: translateY(10px); }
+
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+    /* SOLO TELEFONO */
+    @media (max-width: 480px) {
+      #lumi, #nova { font-size: clamp(0px, 10vw, 20px) !important; }
+      #showcase { width: 28vw !important; max-width: 42vw !important; }
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center">
+  <main class="relative flex items-center justify-center w-full h-screen">
+    <!-- Brand -->
+    <h1 id="brand"
+      class="font-extrabold text-6xl sm:text-8xl tracking-widest text-gray-900 flex items-center justify-center gap-8 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+      <span id="lumi" class="inline-block">LUMI</span>
+      <span id="nova" class="inline-block">NOVA</span>
+    </h1>
+
+    <!-- PRE-TITLE fisso -->
+    <h1 id="preTitle"
+      class="fixed top-6 left-1/2 -translate-x-1/2 z-30 font-extrabold tracking-tight smoke opacity-0 select-none pointer-events-none
+             text-center uppercase w-[min(92vw,1200px)] text-[clamp(36px,9vw,110px)]"
+      aria-hidden="true" style="text-wrap: balance;">
+      LUMI&nbsp;NOVA
+    </h1>
+
+    <!-- TITOLO FINALE (desktop base; su mobile lo riallineiamo via JS) -->
+    <h1 id="finalTitle"
+      class="fixed left-1/2 -translate-x-1/2 z-20 font-extrabold tracking-tight smoke opacity-0 select-none pointer-events-none
+             text-center w-[min(92vw,1100px)] text-[clamp(20px,6vw,42px)]
+             sm:text-5xl md:text-6xl"
+      aria-hidden="true"
+      style="top: clamp(180px, 36vh, 520px); text-wrap: balance;">
+      Let’s build something to remember
+    </h1>
+
+    <!-- Firma -->
+    <h2 id="wevin"
+      class="fixed bottom-6 right-8 text-2xl sm:text-3xl md:text-4xl font-bold opacity-0 select-none pointer-events-none z-20"
+      style="color: #f5f0e6; text-shadow: 0 4px 15px rgba(0,0,0,.25);" aria-hidden="true">
+      Concept Design by Wevin&nbsp;<span class="align-super text-lg">©</span>
+    </h2>
+
+    <!-- Showcase -->
+    <div id="showcase" class="flex items-center justify-center w-[300px] max-w-[80vw] aspect-[16/9]">
+      <div class="slide"><img src="img/img1.jpg" alt="Luminova 1" /></div>
+      <div class="slide"><img src="img/img2.jpg" alt="Luminova 2" /></div>
+      <div class="slide"><img src="img/img3.jpg" alt="Luminova 3" /></div>
+      <div class="slide"><img src="img/img4.jpg" alt="Luminova 4" /></div>
+      <div class="slide"><img src="img/img5.jpg" alt="Luminova 5" /></div>
+    </div>
+
+    <!-- Menu -->
+    <nav id="menuLinks" class="fixed inset-0 z-20 flex items-center justify-center select-none"
+      aria-label="Menu principale" aria-hidden="true">
+      <ul class="flex flex-col sm:flex-row items-center gap-3 sm:gap-5 text-xl sm:text-2xl font-semibold tracking-wide
+             rounded-2xl px-6 py-3">
+        <li>
+          <a href="#project" class="px-2 py-1 text-gray-700 hover:text-white transition-colors duration-300">Project</a>
+        </li>
+        <li>
+          <a href="#services" class="px-2 py-1 text-gray-700 hover:text-white transition-colors durata`ione-300">Services</a>
+        </li>
+        <li>
+          <a href="https://github.com/" target="_blank" rel="noopener noreferrer" class="px-2 py-1 text-gray-700 hover:text-white transition-colors duration-300">Github</a>
+        </li>
+      </ul>
+    </nav>
+  </main>
+
+  <script>
+    let __finalized = false;
+
+    function responsiveGap() {
+      const vv = window.visualViewport;
+      const vw = vv ? vv.width : window.innerWidth;
+      const isPhone = vw <= 480;
+      const g = Math.round(vw * 0.025);
+      return isPhone ? Math.max(8, Math.min(g, 24)) : Math.max(16, Math.min(g, 50));
+    }
+
+    async function preloadImages(urls, { timeout = 10000 } = {}) {
+      const unique = Array.from(new Set(urls.filter(Boolean)));
+      await Promise.all(unique.map(src => new Promise((resolve) => {
+        const img = new Image();
+        img.decoding = "async";
+        const done = () => resolve();
+        img.onload = async () => { try { await img.decode?.(); } catch { } done(); };
+        img.onerror = done;
+        img.src = src;
+        if (img.complete) return done();
+        setTimeout(done, timeout);
+      })));
+    }
+
+    window.addEventListener("load", init, { passive: true });
+
+    async function init() {
+      const lumi = document.getElementById("lumi");
+      const nova = document.getElementById("nova");
+      const showcase = document.getElementById("showcase");
+      const slides = showcase.querySelectorAll(".slide");
+      const preTitle = document.getElementById("preTitle");
+      const finalTitle = document.getElementById("finalTitle");
+      const wevin = document.getElementById("wevin");
+      const menuLinks = document.getElementById("menuLinks");
+      const menuItems = menuLinks.querySelectorAll("li");
+
+      const srcs = Array.from(slides, s => s.querySelector("img")?.src);
+      await preloadImages(srcs);
+
+      gsap.set(slides[0], { autoAlpha: 1 });
+      const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
+
+      tl.from([lumi, nova], { opacity: 0, y: 60, duration: 0.45, stagger: 0.10 });
+
+      const measure = () => ({
+        lumiRect: lumi.getBoundingClientRect(),
+        novaRect: nova.getBoundingClientRect(),
+        showcaseRect: showcase.getBoundingClientRect(),
+        GAP: responsiveGap()
+      });
+
+      const { lumiRect, novaRect, showcaseRect, GAP } = measure();
+      const lumiTargetX = showcaseRect.left - lumiRect.right - GAP;
+      const novaTargetX = showcaseRect.right - novaRect.left + GAP;
+
+      tl.addLabel("splitMove");
+      tl.to(lumi, { x: lumiTargetX, duration: 0.9, ease: "power2.inOut" }, "splitMove");
+      tl.to(nova, { x: novaTargetX, duration: 0.9, ease: "power2.inOut" }, "splitMove");
+
+      tl.fromTo(
+        showcase,
+        { opacity: 0, scale: 0.6, z: -600, filter: "blur(8px)" },
+        {
+          opacity: 1,
+          scale: 1,
+          z: 0,
+          filter: "blur(0px)",
+          duration: 0.9,
+          ease: "power3.out",
+          onComplete: () =>
+            startSlideshow(slides, {
+              kickOff: true,
+              interval: 0.6,
+              fade: 0.25,
+              onThird: () => specialRevealZoomSimple({ showcase, slides, lumi, nova, preTitle, finalTitle, wevin, menuLinks, menuItems })
+            })
+        },
+        "splitMove+=0.35"
+      );
+    }
+
+    function startSlideshow(slides, { kickOff = false, interval = 1.2, fade = 0.35, onThird = null } = {}) {
+      let index = 0, total = slides.length, prev = slides[0], cancelled = false;
+      const show = (el) => gsap.to(el, { autoAlpha: 1, duration: fade });
+      const hide = (el) => gsap.to(el, { autoAlpha: 0, duration: fade });
+
+      const step = () => {
+        if (cancelled) return;
+        const nextIndex = (index + 1) % total;
+        const next = slides[nextIndex];
+        hide(prev); show(next);
+
+        if (nextIndex === 3 && typeof onThird === "function") {
+          cancelled = true; gsap.delayedCall(fade + 0.02, onThird); return;
+        }
+        prev = next; index = nextIndex; gsap.delayedCall(interval, step);
+      };
+
+      if (kickOff) gsap.delayedCall(0.02, step);
+      startSlideshow.stop = () => { cancelled = true; };
+    }
+
+    function specialRevealZoomSimple({ showcase, slides, lumi, nova, preTitle, finalTitle, wevin, menuLinks, menuItems }) {
+      slides.forEach((s, i) => gsap.set(s, { autoAlpha: i === 3 ? 1 : 0 }));
+
+      const rect = showcase.getBoundingClientRect();
+      Object.assign(showcase.style, {
+        position: "fixed",
+        left: rect.left + "px",
+        top: rect.top + "px",
+        width: rect.width + "px",
+        height: rect.height + "px",
+        margin: "0",
+        transformOrigin: "50% 50%",
+        willChange: "transform"
+      });
+
+      const vw = window.innerWidth, vh = window.innerHeight;
+      const dx = (vw / 2) - (rect.left + rect.width / 2);
+      const dy = (vh / 2) - (rect.top + rect.height / 2);
+      const coverScale = Math.max(vw / rect.width, vh / rect.height) * 1.02;
+
+      const tl = gsap.timeline({ defaults: { ease: "power3.inOut" } });
+      tl.to(showcase, { duration: 0.9, x: dx, y: dy, scale: coverScale, force3D: true }, 0);
+      tl.to(lumi, { x: "-120vw", autoAlpha: 0, duration: 0.7 }, 0.05);
+      tl.to(nova, { x: "120vw", autoAlpha: 0, duration: 0.7 }, 0.05);
+
+      tl.add(() => {
+        __finalized = true;
+
+        const ui = gsap.timeline({ defaults: { ease: "power3.out" } });
+        ui.add(() => preTitle.removeAttribute("aria-hidden"));
+        ui.fromTo(preTitle, { y: -20, opacity: 0, filter: "blur(6px)" }, { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.6 });
+
+        const isPhone = window.innerWidth <= 480;
+        const placeFinalTitleMobile = (offset = 10) => {
+          if (!isPhone) return;
+          const preBottom = preTitle.getBoundingClientRect().bottom;
+          finalTitle.style.top = `${Math.round(preBottom + offset)}px`;
+        };
+
+        ui.add(() => { placeFinalTitleMobile(10); finalTitle.removeAttribute("aria-hidden"); }, "+=0.15");
+        ui.fromTo(finalTitle, { y: -16, opacity: 0, filter: "blur(6px)" }, {
+          y: 0, opacity: 1, filter: "blur(0px)", duration: 0.8, onComplete: () => {
+            // Menu: mostrato subito con bg già opaco
+            menuLinks.removeAttribute("aria-hidden");
+            menuLinks.style.visibility = "visible";          // <-- sblocca visibilità (bg già visibile)
+            // Anima SOLO i link, non il background
+            gsap.to(menuItems, { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, onComplete: () => {
+              menuLinks.style.pointerEvents = "auto";        // <-- abilita interazioni quando finito
+            }});
+          }
+        });
+
+        ui.add(() => {
+          gsap.fromTo(wevin, { y: 20, opacity: 0, filter: "blur(6px)" }, { y: 0, opacity: 1, filter: "blur(0px)", duration: 1.0 });
+          wevin.removeAttribute("aria-hidden");
+        }, "+=0.3");
+      });
+    }
+
+    // Mantiene allineamento del titolo mobile
+    window.addEventListener("resize", () => {
+      if (!__finalized) return;
+      const vw = window.innerWidth;
+      if (vw > 480) return;
+      const preTitle = document.getElementById("preTitle");
+      const finalTitle = document.getElementById("finalTitle");
+      const preBottom = preTitle.getBoundingClientRect().bottom;
+      finalTitle.style.top = `${Math.round(preBottom + 10)}px`;
+    }, { passive: true });
+  </script>
+</body>
+</html>
