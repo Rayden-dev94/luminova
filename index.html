@@ -1,7 +1,5 @@
-<!-- /index.html -->
 <!doctype html>
 <html lang="it">
-
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -10,80 +8,87 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
 
-  <link rel="preload" as="image" href="img/img1.jpg">
-  <link rel="preload" as="image" href="img/img2.jpg">
-  <link rel="preload" as="image" href="img/img3.jpg">
-  <link rel="preload" as="image" href="img/img4.jpg">
-  <link rel="preload" as="image" href="img/img5.jpg">
-
   <style>
-    html, body { width: 100%; max-width: 100%; overflow-x: clip; }
+    html, body {width: 100%; max-width: 100%; overflow-x: clip; }
     @supports not (overflow: clip) { html, body { overflow-x: hidden; } }
+    body { background: radial-gradient(circle at 50% 10%, #eceff2 100%); overflow: hidden; }
 
-    body {
-      background: radial-gradient(circle at 50% 10%, #f8f9fb 0%, #eceff2 100%);
-      overflow: hidden;
-    }
-
-    main { perspective: 1200px; overflow-x: clip; }
+    main { perspective: 1200px; overflow-x: clip; position: relative; }
     .slide { position: absolute; inset: 0; opacity: 0; will-change: opacity; }
-    .slide img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; transform: translateZ(0); }
+    .slide img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
 
-    #showcase {
-      contain: layout paint;
-      backface-visibility: hidden;
-      opacity: 0;
-      transform: translateZ(0);
-      will-change: transform, opacity, filter;
-      overflow: hidden;
+    #showcase { contain: layout paint; backface-visibility: hidden; overflow: hidden; opacity: 1; z-index: 5; visibility: hidden; }
+    #brand { z-index: 10; gap: 0 !important; }
+
+    #brandMask { position: absolute; inset: 0; background: radial-gradient(circle at 50% 10%, #eceff2 100%); z-index: 7; pointer-events: none; will-change: opacity; opacity: 1; }
+
+    #lumi, #nova {
+      display: inline-flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: inherit; color: #1f2937;
+      background: radial-gradient(circle at 50% 10%, #eceff2 100%);
+      line-height: 1; width: min(45vw, 380px); height: min(30vh, 540px);
+      padding: 2vw 1vw; box-sizing: border-box; will-change: transform; margin: 0;
     }
 
-    #brand { z-index: 10; }
+    .smoke { color: rgba(31,41,55,.92); text-shadow: 0 10px 30px rgba(0,0,0,.35); letter-spacing: .02em; }
+    #wevin { color: rgba(55,65,81,.9); font-weight: 700; text-shadow: 0 4px 15px rgba(0,0,0,.25); }
 
-    .smoke {
-      color: rgba(31, 41, 55, .92);
-      text-shadow: 0 10px 30px rgba(0, 0, 0, .35);
-      letter-spacing: .02em;
-    }
-
-    #wevin { color: rgba(55, 65, 81, .9); font-weight: 700; text-shadow: 0 4px 15px rgba(0,0,0,.25); }
-
-    /* MENU: nascosto senza occupare/renderizzare (non copre lo sfondo prima del reveal) */
-    #menuLinks { visibility: hidden; pointer-events: none; }
-
-    /* MENU: sfondo vetroso già pronto (non animato) */
+    #menuLinks { visibility: hidden; pointer-events: none; z-index: 40; }
     #menuLinks ul {
-      background-color: rgba(255, 255, 255, 0.06);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      border: 1px solid rgba(255, 255, 255, 0.10);
-      box-shadow: 0 0 25px rgba(0, 0, 0, 0.15);
-      transform: translateY(0); /* stabile */
+      background-color: rgba(255,255,255,0.06);
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,255,255,0.10);
+      box-shadow: 0 0 25px rgba(0,0,0,0.15);
     }
-
-    /* Animeremo solo i link, così lo sfondo appare già opacizzato */
-    #menuLinks ul li { opacity: 0; transform: translateY(10px); }
+    #menuLinks ul li { opacity: 0; transform: translateY(8px); }
 
     @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 
-    /* SOLO TELEFONO */
+    /* —— viewport & fullscreen —— */
+    :root { --vh: 100dvh; --bleed: 0px; }
+    .fullscreen-layer {
+      position: fixed; left: 0; top: 0; width: 100vw;
+      height: 100lvh;
+      height: var(--vh);
+      overflow: hidden; z-index: 5; pointer-events: none; will-change: transform;
+    }
+    .fullscreen-layer img {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; object-position: center; will-change: transform;
+    }
+    /* Bleed su mobile */
     @media (max-width: 480px) {
-      #lumi, #nova { font-size: clamp(0px, 10vw, 20px) !important; }
-      #showcase { width: 28vw !important; max-width: 42vw !important; }
+      :root { --bleed: 14vh; }
+      .fullscreen-layer img { height: calc(100% + var(--bleed)); top: calc(var(--bleed) / -2); }
+    }
+
+    /* --------- MOBILE (<=480px) --------- */
+    @media (max-width: 480px) {
+      #brand { font-size: clamp(6px, 4vw, 28px) !important; letter-spacing: .02em; line-height: 1.02; }
+      #lumi, #nova { width: 26vw; height: 244px; padding: 1.2vw 0.8vw; }
+      #preTitle { font-size: clamp(20px, 7.5vw, 32px) !important; }
+      #showcase { width: 46vw !important; max-width: 78vw !important; }
+
+      /* —— Alza il badge su telefono —— */
+      #wevin {
+        /* più lontano dal bordo basso = più in alto */
+        bottom: calc(18vh + env(safe-area-inset-bottom, 0px));
+        right: 6px;
+      }
     }
   </style>
 </head>
 
 <body class="min-h-screen flex items-center justify-center">
   <main class="relative flex items-center justify-center w-full h-screen">
-    <!-- Brand -->
-    <h1 id="brand"
+    <div id="brand" role="heading" aria-level="1"
       class="font-extrabold text-6xl sm:text-8xl tracking-widest text-gray-900 flex items-center justify-center gap-8 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-      <span id="lumi" class="inline-block">LUMI</span>
-      <span id="nova" class="inline-block">NOVA</span>
-    </h1>
+      <p id="lumi" class="inline-block">LUMI</p>
+      <p id="nova" class="inline-block">NOVA</p>
+    </div>
 
-    <!-- PRE-TITLE fisso -->
+    <div id="brandMask" aria-hidden="true"></div>
+
     <h1 id="preTitle"
       class="fixed top-6 left-1/2 -translate-x-1/2 z-30 font-extrabold tracking-tight smoke opacity-0 select-none pointer-events-none
              text-center uppercase w-[min(92vw,1200px)] text-[clamp(36px,9vw,110px)]"
@@ -91,7 +96,6 @@
       LUMI&nbsp;NOVA
     </h1>
 
-    <!-- TITOLO FINALE (desktop base; su mobile lo riallineiamo via JS) -->
     <h1 id="finalTitle"
       class="fixed left-1/2 -translate-x-1/2 z-20 font-extrabold tracking-tight smoke opacity-0 select-none pointer-events-none
              text-center w-[min(92vw,1100px)] text-[clamp(20px,6vw,42px)]
@@ -101,15 +105,14 @@
       Let’s build something to remember
     </h1>
 
-    <!-- Firma -->
     <h2 id="wevin"
-      class="fixed bottom-6 right-8 text-2xl sm:text-3xl md:text-4xl font-bold opacity-0 select-none pointer-events-none z-20"
-      style="color: #f5f0e6; text-shadow: 0 4px 15px rgba(0,0,0,.25);" aria-hidden="true">
+      class="fixed right-8 text-2xl sm:text-3xl md:text-4xl font-bold opacity-0 select-none pointer-events-none z-20"
+      style="color: #f5f0e6; text-shadow: 0 4px 15px rgba(0,0,0,.25); bottom: calc(50px + env(safe-area-inset-bottom, 0px));"
+      aria-hidden="true">
       Concept Design by Wevin&nbsp;<span class="align-super text-lg">©</span>
     </h2>
 
-    <!-- Showcase -->
-    <div id="showcase" class="flex items-center justify-center w-[300px] max-w-[80vw] aspect-[16/9]">
+    <div id="showcase" class="flex items-center justify-center w-[300px] max-w-[80vw] aspect-[16/9] z-[5]">
       <div class="slide"><img src="img/img1.jpg" alt="Luminova 1" /></div>
       <div class="slide"><img src="img/img2.jpg" alt="Luminova 2" /></div>
       <div class="slide"><img src="img/img3.jpg" alt="Luminova 3" /></div>
@@ -117,20 +120,12 @@
       <div class="slide"><img src="img/img5.jpg" alt="Luminova 5" /></div>
     </div>
 
-    <!-- Menu -->
-    <nav id="menuLinks" class="fixed inset-0 z-20 flex items-center justify-center select-none"
+    <nav id="menuLinks" class="fixed inset-0 flex items-center justify-center select-none"
       aria-label="Menu principale" aria-hidden="true">
-      <ul class="flex flex-col sm:flex-row items-center gap-3 sm:gap-5 text-xl sm:text-2xl font-semibold tracking-wide
-             rounded-2xl px-6 py-3">
-        <li>
-          <a href="#project" class="px-2 py-1 text-gray-700 hover:text-white transition-colors duration-300">Project</a>
-        </li>
-        <li>
-          <a href="#services" class="px-2 py-1 text-gray-700 hover:text-white transition-colors durata`ione-300">Services</a>
-        </li>
-        <li>
-          <a href="https://github.com/" target="_blank" rel="noopener noreferrer" class="px-2 py-1 text-gray-700 hover:text-white transition-colors duration-300">Github</a>
-        </li>
+      <ul class="flex flex-col sm:flex-row items-center gap-3 sm:gap-5 text-xl sm:text-2xl font-semibold tracking-wide rounded-2xl px-6 py-3">
+        <li><a href="#project"  class="px-2 py-1 text-gray-700 hover:text-white transition-colors duration-300">Project</a></li>
+        <li><a href="#services" class="px-2 py-1 text-gray-700 hover:text-white transition-colors duration-300">Services</a></li>
+        <li><a href="https://github.com/" target="_blank" rel="noopener noreferrer" class="px-2 py-1 text-gray-700 hover:text-white transition-colors duration-300">Github</a></li>
       </ul>
     </nav>
   </main>
@@ -138,31 +133,34 @@
   <script>
     let __finalized = false;
 
+    function setRealVhVar() {
+      const vv = window.visualViewport;
+      const h = vv ? vv.height : window.innerHeight; // evita salti con toolbar
+      document.documentElement.style.setProperty('--vh', h + 'px');
+    }
+    document.addEventListener("DOMContentLoaded", () => { setRealVhVar(); init(); }, { passive: true });
+    window.addEventListener('resize', setRealVhVar, { passive: true });
+    window.addEventListener('orientationchange', setRealVhVar, { passive: true });
+
     function responsiveGap() {
       const vv = window.visualViewport;
       const vw = vv ? vv.width : window.innerWidth;
       const isPhone = vw <= 480;
       const g = Math.round(vw * 0.025);
-      return isPhone ? Math.max(8, Math.min(g, 24)) : Math.max(16, Math.min(g, 50));
+      return isPhone ? Math.max(6, Math.min(g, 16)) : Math.max(16, Math.min(g, 50));
     }
 
-    async function preloadImages(urls, { timeout = 10000 } = {}) {
-      const unique = Array.from(new Set(urls.filter(Boolean)));
-      await Promise.all(unique.map(src => new Promise((resolve) => {
-        const img = new Image();
-        img.decoding = "async";
-        const done = () => resolve();
-        img.onload = async () => { try { await img.decode?.(); } catch { } done(); };
-        img.onerror = done;
-        img.src = src;
-        if (img.complete) return done();
-        setTimeout(done, timeout);
-      })));
+    function preloadImages(imgNodes) {
+      const toPromise = (img) => {
+        if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+        if ('decode' in img) return img.decode().catch(() => {});
+        return new Promise((res) => { img.addEventListener('load', res, { once: true }); img.addEventListener('error', res, { once: true }); });
+      };
+      return Promise.all(Array.from(imgNodes).map(toPromise));
     }
-
-    window.addEventListener("load", init, { passive: true });
 
     async function init() {
+      const main = document.querySelector('main');
       const lumi = document.getElementById("lumi");
       const nova = document.getElementById("nova");
       const showcase = document.getElementById("showcase");
@@ -172,137 +170,154 @@
       const wevin = document.getElementById("wevin");
       const menuLinks = document.getElementById("menuLinks");
       const menuItems = menuLinks.querySelectorAll("li");
+      const brandMask = document.getElementById("brandMask");
 
-      const srcs = Array.from(slides, s => s.querySelector("img")?.src);
-      await preloadImages(srcs);
+      const coverImg = slides[0].querySelector('img');
+      const preloadCover = preloadImages([coverImg]);
+      const preloadReveal = preloadImages([slides[3].querySelector('img')]);
+      const preloadAll = preloadImages(showcase.querySelectorAll('img')); // opzionale
 
       gsap.set(slides[0], { autoAlpha: 1 });
-      const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
 
-      tl.from([lumi, nova], { opacity: 0, y: 60, duration: 0.45, stagger: 0.10 });
+      await new Promise((resolve) => {
+        gsap.timeline({ defaults: { ease: "power3.out" } })
+          .fromTo(lumi, { yPercent: -160, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.6 })
+          .fromTo(nova, { yPercent: 160,  opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.6 }, "<0.05")
+          .add(resolve);
+      });
 
-      const measure = () => ({
+      try { await preloadCover; } catch {}
+
+      const { lumiRect, novaRect, showcaseRect, GAP } = (() => ({
         lumiRect: lumi.getBoundingClientRect(),
         novaRect: nova.getBoundingClientRect(),
         showcaseRect: showcase.getBoundingClientRect(),
         GAP: responsiveGap()
-      });
+      }))();
 
-      const { lumiRect, novaRect, showcaseRect, GAP } = measure();
       const lumiTargetX = showcaseRect.left - lumiRect.right - GAP;
       const novaTargetX = showcaseRect.right - novaRect.left + GAP;
 
-      tl.addLabel("splitMove");
-      tl.to(lumi, { x: lumiTargetX, duration: 0.9, ease: "power2.inOut" }, "splitMove");
-      tl.to(nova, { x: novaTargetX, duration: 0.9, ease: "power2.inOut" }, "splitMove");
+      const tlSplit = gsap.timeline({ defaults: { ease: "power2.inOut" } });
 
-      tl.fromTo(
-        showcase,
-        { opacity: 0, scale: 0.6, z: -600, filter: "blur(8px)" },
-        {
-          opacity: 1,
-          scale: 1,
-          z: 0,
-          filter: "blur(0px)",
-          duration: 0.9,
-          ease: "power3.out",
-          onComplete: () =>
-            startSlideshow(slides, {
-              kickOff: true,
-              interval: 0.6,
-              fade: 0.25,
-              onThird: () => specialRevealZoomSimple({ showcase, slides, lumi, nova, preTitle, finalTitle, wevin, menuLinks, menuItems })
-            })
-        },
-        "splitMove+=0.35"
-      );
+      tlSplit.add(() => {
+        showcase.style.visibility = 'visible';
+        gsap.to(brandMask, { autoAlpha: 0, duration: 0.25, onComplete: () => brandMask.remove() });
+      }, 0);
+
+      tlSplit.to(lumi, { x: lumiTargetX, duration: 0.8 }, 0);
+      tlSplit.to(nova, { x: novaTargetX, duration: 0.8 }, 0);
+
+      tlSplit.add(() => startSlideshow(slides, {
+        interval: 0.8,
+        fade: 0.25,
+        onThird: () => revealFullscreenFLIP({
+          main, showcase, slides, lumi, nova, preTitle, finalTitle, wevin, menuLinks, menuItems, preloadReveal
+        })
+      }));
     }
 
-    function startSlideshow(slides, { kickOff = false, interval = 1.2, fade = 0.35, onThird = null } = {}) {
+    function startSlideshow(slides, { interval = 0.9, fade = 0.25, onThird = null } = {}) {
       let index = 0, total = slides.length, prev = slides[0], cancelled = false;
-      const show = (el) => gsap.to(el, { autoAlpha: 1, duration: fade });
-      const hide = (el) => gsap.to(el, { autoAlpha: 0, duration: fade });
 
-      const step = () => {
+      const advance = () => {
         if (cancelled) return;
         const nextIndex = (index + 1) % total;
         const next = slides[nextIndex];
-        hide(prev); show(next);
+
+        gsap.to(prev, { autoAlpha: 0, duration: fade });
+        gsap.to(next, { autoAlpha: 1, duration: fade });
 
         if (nextIndex === 3 && typeof onThird === "function") {
-          cancelled = true; gsap.delayedCall(fade + 0.02, onThird); return;
+          cancelled = true;
+          gsap.delayedCall(fade + 0.02, onThird);
+          return;
         }
-        prev = next; index = nextIndex; gsap.delayedCall(interval, step);
+
+        prev = next; index = nextIndex;
+        gsap.delayedCall(interval, advance);
       };
 
-      if (kickOff) gsap.delayedCall(0.02, step);
+      gsap.delayedCall(0.02, advance);
       startSlideshow.stop = () => { cancelled = true; };
     }
 
-    function specialRevealZoomSimple({ showcase, slides, lumi, nova, preTitle, finalTitle, wevin, menuLinks, menuItems }) {
+    async function revealFullscreenFLIP({ main, showcase, slides, lumi, nova, preTitle, finalTitle, wevin, menuLinks, menuItems, preloadReveal }) {
       slides.forEach((s, i) => gsap.set(s, { autoAlpha: i === 3 ? 1 : 0 }));
 
-      const rect = showcase.getBoundingClientRect();
-      Object.assign(showcase.style, {
-        position: "fixed",
-        left: rect.left + "px",
-        top: rect.top + "px",
-        width: rect.width + "px",
-        height: rect.height + "px",
-        margin: "0",
-        transformOrigin: "50% 50%",
-        willChange: "transform"
-      });
+      const activeImg = slides[3].querySelector('img');
+      try { await preloadReveal; } catch {}
 
-      const vw = window.innerWidth, vh = window.innerHeight;
-      const dx = (vw / 2) - (rect.left + rect.width / 2);
-      const dy = (vh / 2) - (rect.top + rect.height / 2);
-      const coverScale = Math.max(vw / rect.width, vh / rect.height) * 1.02;
+      const r = activeImg.getBoundingClientRect();
 
-      const tl = gsap.timeline({ defaults: { ease: "power3.inOut" } });
-      tl.to(showcase, { duration: 0.9, x: dx, y: dy, scale: coverScale, force3D: true }, 0);
-      tl.to(lumi, { x: "-120vw", autoAlpha: 0, duration: 0.7 }, 0.05);
-      tl.to(nova, { x: "120vw", autoAlpha: 0, duration: 0.7 }, 0.05);
+      const layer = document.createElement('div');
+      layer.className = 'fullscreen-layer';
+
+      const hi = document.createElement('img');
+      hi.alt = activeImg.alt || '';
+      hi.src = activeImg.currentSrc || activeImg.src;
+      layer.appendChild(hi);
+      main.appendChild(layer);
+
+      showcase.style.visibility = 'hidden';
+
+      const rectLayer = layer.getBoundingClientRect();
+      const vw = rectLayer.width;
+      const vh = rectLayer.height;
+
+      const cx = r.left + r.width / 2;
+      const cy = r.top + r.height / 2;
+      const vx = rectLayer.left + vw / 2;
+      const vy = rectLayer.top + vh / 2;
+
+      const scaleX = r.width / vw;
+      const scaleY = r.height / vh;
+      const translateX = cx - vx;
+      const translateY = cy - vy;
+
+      gsap.set(layer, { transformOrigin: '50% 50% 0', force3D: true, x: translateX, y: translateY, scaleX, scaleY });
+
+      const tl = gsap.timeline({ defaults: { ease: 'power3.inOut' } });
+      tl.to(lumi, { x: '-120vw', autoAlpha: 0, duration: 0.6 }, 0.02);
+      tl.to(nova, { x: '120vw', autoAlpha: 0, duration: 0.6 }, 0.02);
+      tl.to(layer, { duration: 0.7, x: 0, y: 0, scaleX: 1, scaleY: 1, force3D: true }, 0);
 
       tl.add(() => {
         __finalized = true;
+        const ui = gsap.timeline({ defaults: { ease: 'power3.out' } });
+        ui.add(() => preTitle.removeAttribute('aria-hidden'));
+        ui.fromTo(preTitle, { y: -16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45 });
 
-        const ui = gsap.timeline({ defaults: { ease: "power3.out" } });
-        ui.add(() => preTitle.removeAttribute("aria-hidden"));
-        ui.fromTo(preTitle, { y: -20, opacity: 0, filter: "blur(6px)" }, { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.6 });
-
-        const isPhone = window.innerWidth <= 480;
+        const isPhone = (window.visualViewport ? window.visualViewport.width : window.innerWidth) <= 480;
         const placeFinalTitleMobile = (offset = 10) => {
           if (!isPhone) return;
           const preBottom = preTitle.getBoundingClientRect().bottom;
           finalTitle.style.top = `${Math.round(preBottom + offset)}px`;
         };
 
-        ui.add(() => { placeFinalTitleMobile(10); finalTitle.removeAttribute("aria-hidden"); }, "+=0.15");
-        ui.fromTo(finalTitle, { y: -16, opacity: 0, filter: "blur(6px)" }, {
-          y: 0, opacity: 1, filter: "blur(0px)", duration: 0.8, onComplete: () => {
-            // Menu: mostrato subito con bg già opaco
-            menuLinks.removeAttribute("aria-hidden");
-            menuLinks.style.visibility = "visible";          // <-- sblocca visibilità (bg già visibile)
-            // Anima SOLO i link, non il background
-            gsap.to(menuItems, { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, onComplete: () => {
-              menuLinks.style.pointerEvents = "auto";        // <-- abilita interazioni quando finito
-            }});
+        ui.add(() => { placeFinalTitleMobile(10); finalTitle.removeAttribute('aria-hidden'); }, '+=0.1');
+        ui.fromTo(finalTitle, { y: -12, opacity: 0 }, {
+          y: 0, opacity: 1, duration: 0.6, onComplete: () => {
+            menuLinks.removeAttribute('aria-hidden');
+            menuLinks.style.visibility = 'visible';
+            gsap.to(menuLinks.querySelectorAll('li'), {
+              opacity: 1, y: 0, duration: 0.4, stagger: 0.08,
+              onComplete: () => { menuLinks.style.pointerEvents = 'auto'; }
+            });
           }
         });
 
         ui.add(() => {
-          gsap.fromTo(wevin, { y: 20, opacity: 0, filter: "blur(6px)" }, { y: 0, opacity: 1, filter: "blur(0px)", duration: 1.0 });
-          wevin.removeAttribute("aria-hidden");
-        }, "+=0.3");
+          // Nota: la posizione finale di #wevin è gestita dal CSS; GSAP anima solo l'entrata.
+          gsap.fromTo(wevin, { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6 });
+          wevin.removeAttribute('aria-hidden');
+        }, '+=0.2');
       });
     }
 
-    // Mantiene allineamento del titolo mobile
     window.addEventListener("resize", () => {
       if (!__finalized) return;
-      const vw = window.innerWidth;
-      if (vw > 480) return;
+      if ((window.visualViewport ? window.visualViewport.width : window.innerWidth) > 480) return;
       const preTitle = document.getElementById("preTitle");
       const finalTitle = document.getElementById("finalTitle");
       const preBottom = preTitle.getBoundingClientRect().bottom;
