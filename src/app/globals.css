@@ -1,0 +1,272 @@
+@import "tailwindcss";
+
+/* ─── Design tokens ──────────────────────────────────────────────────────── */
+/* --font-cormorant is injected by Next.js from Playfair_Display — do NOT redefine it here */
+:root {
+  --vh: 100dvh;
+  --bleed: 0px;
+  --bg: #eceae4;   /* single flat warm-cream — avoids gradient mismatch on mask elements */
+}
+
+/* ─── Base ───────────────────────────────────────────────────────────────── */
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+@supports not (overflow: clip) {
+  html, body { overflow-x: hidden; }
+}
+
+body {
+  background: var(--bg);
+  overflow: hidden;
+}
+
+/* ─── Film grain ─────────────────────────────────────────────────────────── */
+@keyframes grain {
+  0%   { transform: translate(0,    0)    }
+  15%  { transform: translate(-4%, -8%)   }
+  30%  { transform: translate(6%,  -2%)   }
+  45%  { transform: translate(-3%,  7%)   }
+  60%  { transform: translate(8%,   3%)   }
+  75%  { transform: translate(-6%,  5%)   }
+  90%  { transform: translate(3%,  -6%)   }
+  100% { transform: translate(0,    0)    }
+}
+
+.grain {
+  position: fixed;
+  top: -60%;
+  left: -60%;
+  width: 220%;
+  height: 220%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.038;
+  animation: grain 0.6s steps(1) infinite;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ─── Slideshow ──────────────────────────────────────────────────────────── */
+.slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  will-change: opacity;
+}
+
+.slide img {
+  /* next/image fill handles position/size via inline styles;
+     we only need object-fit here */
+  object-fit: cover;
+  object-position: center;
+}
+
+/* ─── Brand block ────────────────────────────────────────────────────────── */
+#showcase {
+  contain: layout paint;
+  backface-visibility: hidden;
+  overflow: hidden;
+  opacity: 1;
+  z-index: 5;
+  visibility: hidden;
+}
+
+#brand {
+  z-index: 10;
+  gap: 0 !important;
+}
+
+#brandMask {
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+  z-index: 7;
+  pointer-events: none;
+  will-change: opacity;
+  opacity: 1;
+}
+
+#lumi, #nova {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: inherit;
+  color: #1a1a1a;
+  background: var(--bg);
+  line-height: 1;
+  width: min(45vw, 380px);
+  height: min(30vh, 540px);
+  padding: 2vw 1vw;
+  box-sizing: border-box;
+  will-change: transform;
+  margin: 0;
+  letter-spacing: 0.08em;
+}
+
+/* ─── Typography — premium title layer ──────────────────────────────────── */
+.smoke {
+  color: rgba(20, 18, 15, 0.88);
+  text-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
+  letter-spacing: 0.1em;
+}
+
+#preTitle {
+  /* Characters will be wrapped in spans by GSAP — needs perspective */
+  perspective: 700px;
+  perspective-origin: 50% 50%;
+}
+
+/* preTitle chars inherit the h1 style; the span makes them individually animatable */
+#preTitle span {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+
+/* Tagline — Playfair Display italic */
+#finalTitle {
+  font-family: var(--font-cormorant), Georgia, serif;
+  font-style: italic;
+  font-weight: 400;          /* Playfair has 400/600/700 — 300 would fall back ugly */
+  letter-spacing: 0.03em;
+  color: rgba(248, 244, 238, 0.95);
+  text-shadow: 0 6px 40px rgba(0, 0, 0, 0.45);
+  /* No overflow:hidden — italic descenders/ascenders must not be clipped */
+}
+
+/* Studio byline — Playfair italic */
+#wevin {
+  font-family: var(--font-cormorant), Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  color: rgba(248, 244, 238, 0.82);
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.35);
+  letter-spacing: 0.04em;
+}
+
+#wevin strong {
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  font-family: inherit;
+}
+
+/* ─── Navigation ─────────────────────────────────────────────────────────── */
+#menuLinks {
+  visibility: hidden;
+  pointer-events: none;
+  z-index: 40;
+}
+
+#menuLinks ul {
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 4px 40px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+#menuLinks ul li {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+#menuLinks a {
+  position: relative;
+  color: rgba(240, 235, 228, 0.85);
+  letter-spacing: 0.08em;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  transition: color 0.4s ease;
+}
+
+#menuLinks a::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: rgba(240, 235, 228, 0.6);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#menuLinks a:hover {
+  color: rgba(255, 255, 255, 1);
+}
+
+#menuLinks a:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* ─── Fullscreen expand layer ────────────────────────────────────────────── */
+.fullscreen-layer {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100lvh;
+  height: var(--vh);
+  overflow: hidden;
+  z-index: 5;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.fullscreen-layer img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  will-change: transform;
+}
+
+/* ─── A11y ───────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, .grain { animation: none !important; transition: none !important; }
+}
+
+/* ─── Mobile ─────────────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  :root { --bleed: 14vh; }
+
+  .fullscreen-layer img {
+    height: calc(100% + var(--bleed));
+    top: calc(var(--bleed) / -2);
+  }
+
+  #brand {
+    font-size: clamp(6px, 4vw, 28px) !important;
+    letter-spacing: 0.06em;
+    line-height: 1.02;
+  }
+
+  #lumi, #nova {
+    width: 26vw;
+    height: 244px;
+    padding: 1.2vw 0.8vw;
+  }
+
+  #preTitle {
+    font-size: clamp(20px, 7.5vw, 32px) !important;
+  }
+
+  #showcase {
+    width: 46vw !important;
+    max-width: 78vw !important;
+  }
+
+  #wevin {
+    bottom: calc(18vh + env(safe-area-inset-bottom, 0px));
+    right: 12px;
+    font-size: 1rem;
+  }
+}
