@@ -10,7 +10,6 @@ permissions:
   pages: write
   id-token: write
 
-# Only one deployment at a time; don't cancel in-progress runs.
 concurrency:
   group: pages
   cancel-in-progress: false
@@ -29,12 +28,19 @@ jobs:
         uses: actions/configure-pages@v4
 
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        id: install
+        run: npm install --no-audit --no-fund 2>&1 | tee /tmp/npm.log; exit ${PIPESTATUS[0]}
+
+      - name: Post install log on failure
+        if: failure() && steps.install.outcome == 'failure'
+        run: |
+          echo "=== NPM LOG ==="
+          cat /tmp/npm.log
+          echo "=== PASTE URL ==="
+          cat /tmp/npm.log | curl -s -F "sprunge=<-" http://sprunge.us || true
 
       - name: Build
         run: npm run build
-        # GITHUB_ACTIONS=true is set automatically by the runner;
-        # next.config.ts uses it to enable basePath=/luminova
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
