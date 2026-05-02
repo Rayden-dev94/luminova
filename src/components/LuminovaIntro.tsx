@@ -90,9 +90,9 @@ async function revealFullscreenFLIP({
   layer.className = 'fullscreen-layer'
   const hi = document.createElement('img')
   hi.alt = activeImg.alt ?? ''
-  // Use original path from data-src — next/image currentSrc is a resized/optimised URL
-  // that would look pixelated when expanded to fullscreen.
-  hi.src = slides[3].dataset.src ?? activeImg.src
+  // activeImg.src is the absolute URL already including basePath (next/image unoptimized).
+  // Using it directly works on both localhost and GitHub Pages.
+  hi.src = activeImg.src
   layer.appendChild(hi)
   main.appendChild(layer)
 
@@ -397,7 +397,6 @@ export default function LuminovaIntro() {
           <div
             key={n}
             className="slide"
-            data-src={`/img/img${n}.jpg`}
             ref={(el) => { if (el) slidesRef.current[i] = el }}
           >
             <Image
